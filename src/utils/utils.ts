@@ -136,6 +136,22 @@ export const GET_USER_BALANCES = gql`
     }
 `;
 
+export const GET_USER_PFP = gql`
+query($id: ProfileId!) {
+  profile(request: {profileId: $id}) {
+    id
+    picture {
+      ... on MediaSet {
+        __typename
+        original {
+          url
+        }
+      }
+    }
+  }
+}
+`;
+
 export const GET_DEFAULT_PROFILES = gql`
   query($request: DefaultProfileRequest!) {
     defaultProfile(request: $request) {

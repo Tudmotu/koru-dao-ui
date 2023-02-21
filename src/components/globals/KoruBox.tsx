@@ -26,20 +26,24 @@ export function KoruBox(props: any) {
 
     const chainId: number = chain?.id && [137, 80001].includes(Number(chain?.id)) ? chain.id : 137;
 
+    const ipfsPicURL: string = props.publication.profile.picture.original.url;
+    const picHash: string = ipfsPicURL.replace('ipfs://', '');
+    const profilePic: string = `https://cloudflare-ipfs.com/ipfs/${picHash}`;
+
     return (
         <a href={`${supportedChains[chainId]?.lensProfileUrl}/posts/${props.publication.id}`}
            target="_blank">
             <div className="koru-box !p-6">
                 <div className="flex gap-4">
-                    <UiIcon icon="logo-pic" classes="w-12 h-12" />
+                    <img src={profilePic} className="rounded-full w-12 h-12 inline-block" alt={`${props.publication.profile.name} profile picture`} />
                     <div className="w-full">
                         <div className="flex justify-between">
                             <div>
                                 <h1 className="font-medium">
-                                    Koru DAO
+                                    {props.publication.profile.name}
                                 </h1>
                                 <p className="koru-gradient-text-1 inline-block font-medium">
-                                    @Koru DAO
+                                    @{props.publication.profile.handle}
                                 </p>
                             </div>
                             <div className="text-sm opacity-40">

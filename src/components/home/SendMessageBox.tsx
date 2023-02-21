@@ -21,7 +21,7 @@ export default function SendMessageBox() {
     const { address } = useAccount();
     const { data: signer } = useSigner();
 
-    const { lensHandler, publications, setPublications, userPost, nftId }: any = useContext(AppContext);
+    const { lensHandler, publications, setPublications, userPost, nftId, collectivePFP }: any = useContext(AppContext);
 
     const [userMessage, setUserMessage] = useState<string>('');
     const [isPosted, setIsPosted] = useState<any>(false);
@@ -57,22 +57,26 @@ export default function SendMessageBox() {
     };
 
     const makeLensPost = async () => {
+        console.log('Making Lens post...')
         const koruDao = koruContract.connect(supportedChains[chain?.id as number].koru, signer as Signer);
 
         const cid = await uploadIpfs();
         const contentURI = "https://koru.infura-ipfs.io/ipfs/" + cid;
+        console.log('Uploaded to IPFS...')
 
         const postData = {
             profileId: supportedChains[chain?.id as number].lensProfileId,
             contentURI,
-            collectModule: supportedChains[chain?.id as number].freeCollectModule,
+            collectModule: ethers.constants.AddressZero, // supportedChains[chain?.id as number].freeCollectModule,
             collectModuleInitData:
                 "0x0000000000000000000000000000000000000000000000000000000000000000",
             referenceModule: ethers.constants.AddressZero,
             referenceModuleInitData: "0x",
         };
 
+        console.log('Encoding Relay transaction')
         const data = koruDao.interface.encodeFunctionData("post", [postData]);
+        console.log('Encoded Relay transaction')
 
         if (!chain || !address) throw new Error("!chain || !address");
 
@@ -123,19 +127,13 @@ export default function SendMessageBox() {
         <div>
             <div className="koru-box mt-6 lg:mt-10 p-10 min-h-[200px]">
                 <div className="flex gap-4">
-                    <UiIcon icon="logo-pic" classes="w-12 h-12" />
+                    <span style={{ backgroundImage: `url('${collectivePFP}')`}} className="flex-none w-12 h-12 rounded-full bg-center bg-cover" />
                     <div className="text-left w-full">
-                        <h1 className="font-medium">
-                            Koru DAO
-                        </h1>
-                        <p className="koru-gradient-text-1 inline-block font-medium">
-                            @Koru DAO
-                        </p>
                         <textarea
                             onChange={(e) => setUserMessage(e.target.value)}
                             disabled={isPosted || !nftId || !userPost?.canPost || isGettingSignature}
                             rows={4}
-                            className="w-full p-4 mt-4 min-h-[100px]"
+                            className="w-full p-4 min-h-[100px]"
                             placeholder="Hello, world!"
                             value={userMessage}
                         />

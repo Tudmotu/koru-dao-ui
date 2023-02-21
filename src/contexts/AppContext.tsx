@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useEffect, useState } from 'react';
 import { supportedChains } from '../blockchain/constants';
 import { useAccount, useNetwork, useSigner } from 'wagmi';
 import { nftContract } from '../blockchain/contracts/nftContract.factory';
-import { GET_DEFAULT_PROFILES, GET_PUBLICATIONS } from '../utils/utils';
+import { GET_DEFAULT_PROFILES, GET_PUBLICATIONS, GET_USER_PFP } from '../utils/utils';
 import { Signer } from 'ethers';
 import request from 'graphql-request';
 import { koruContract } from '../blockchain/contracts/koruContract.factory';
@@ -16,6 +16,7 @@ export const AppContext = createContext<any>(contextDefaultValues);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
     const { chain } = useNetwork();
+    const chainId: number = chain?.id as number ?? (location.hostname === 'localhost' ? (location.search.includes('mainnet') ? 137 : 80001) : 137);
     const { address, isConnected } = useAccount();
     const { data: signer } = useSigner();
     const [connectModal, setConnectModal] = useState<boolean>(false);
@@ -41,6 +42,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         lastPost: null,
         postInterval: null,
     });
+    const [collectivePFP, setCollectivePFP] = useState<string>("");
 
     function logState(state: boolean[]) {
         const errorsMap = [
@@ -58,7 +60,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const getIsEligible = async () => {
         try {
-            const contract = nftContract.connect(supportedChains[chain?.id as number].nft, signer as Signer);
+            const contract = nftContract.connect(supportedChains[chainId].nft, signer as Signer);
             if (!contract.signer.getAddress) return;
 
             const isEligible = await contract.isEligible(address);
@@ -73,7 +75,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const getNft = async () => {
         try {
-            const contract = nftContract.connect(supportedChains[chain?.id as number].nft, signer as Signer);
+            const contract = nftContract.connect(supportedChains[chainId].nft, signer as Signer);
             if (!contract.signer.getAddress) return;
 
             const tokenId = await contract.tokenOfOwnerByIndex(address, 0);
@@ -87,8 +89,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // Get the connected user last post
     const getLastPost = async () => {
         try {
-            const nft = nftContract.connect(supportedChains[chain?.id as number].nft, signer as Signer);
-            const time = timeRestriction.connect(supportedChains[chain?.id as number].timeRestriction, signer as Signer);
+            const nft = nftContract.connect(supportedChains[chainId].nft, signer as Signer);
+            const time = timeRestriction.connect(supportedChains[chainId].timeRestriction, signer as Signer);
 
             const tokenId = await nft.tokenOfOwnerByIndex(address, 0);
 
@@ -117,7 +119,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const nftAmountLeft = async () => {
         try {
-            const contract = nftContract.connect(supportedChains[chain?.id as number].nft, signer as Signer);
+            const contract = nftContract.connect(supportedChains[chainId].nft, signer as Signer);
             const totalSupply = await contract.totalSupply();
             const maxSupply = await contract.maxSupply();
 
@@ -134,7 +136,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const hasMinted = async (id: string) => {
         try {
-            const contract = nftContract.connect(supportedChains[chain?.id as number].nft, signer as Signer);
+            const contract = nftContract.connect(supportedChains[chainId].nft, signer as Signer);
             const lensProfileMinted = await contract.lensProfileMinted(id);
             setLensProfileMinted(lensProfileMinted);
         } catch (err) {
@@ -142,9 +144,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const getCollectivePFP = async () => {
+        const { profile } = await request(supportedChains[chainId].lensUrl, GET_USER_PFP, {
+            id: supportedChains[chainId].lensProfileId
+        });
+        const ipfsPicURL: string = profile.picture.original.url;
+        const picHash: string = ipfsPicURL.replace('ipfs://', '');
+        const profilePic: string = `https://cloudflare-ipfs.com/ipfs/${picHash}`;
+
+        setCollectivePFP(profilePic);
+    };
+
     const getWalletLensHandle = async () => {
         try {
-            const { defaultProfile } = await request(supportedChains[chain?.id as number].lensUrl, GET_DEFAULT_PROFILES, {
+            const { defaultProfile } = await request(supportedChains[chainId].lensUrl, GET_DEFAULT_PROFILES, {
                 request: {
                     ethereumAddress: address?.toLowerCase(),
                 },
@@ -163,7 +176,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const getAllPosts = async () => {
         try {
-            const chainId: number = chain?.id && [137, 80001].includes(Number(chain?.id)) ? chain.id : 137;
             const query = {
                 "profileId": supportedChains[chainId]?.lensProfileId,
                 "publicationTypes": ["POST", "COMMENT", "MIRROR"],
@@ -208,7 +220,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
 
     useEffect(() => {
-        if (!signer || !isConnected || !address || !supportedChains[chain?.id as number]?.nft) {
+        getCollectivePFP();
+    }, [supportedChains[chainId]?.lensProfileId]);
+
+
+    useEffect(() => {
+        if (!signer || !isConnected || !address || !supportedChains[chainId]?.nft) {
             return;
         }
 
@@ -261,6 +278,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 lensProfileMinted,
                 mintTaskId,
                 setMintTaskId,
+                collectivePFP
             }}
         >
             {children}

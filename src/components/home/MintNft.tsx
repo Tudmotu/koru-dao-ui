@@ -75,16 +75,13 @@ export default function MintNft() {
                         {chain?.id === 137 &&
                           <p className="font-bold text-lg koru-gradient-text-3">
                               <span>{chain?.id === 137 ? totalNftSupply - totalNftMinted : totalNftSupply} </span>
-                              Koru DAO NFTs available
+                              NFTs available for minting
                           </p>
                         }
                         {chain?.id === 80001 &&
                           <>
                               <p className="font-bold text-lg koru-gradient-text-3">
-                                  Testnet Koru DAO: Mint Open
-                              </p>
-                              <p>
-                                  You can test our Gelato’s gasless NFT minting and message posting here on Mumbai.
+                                  Testnet: Mint Open
                               </p>
                           </>
                         }

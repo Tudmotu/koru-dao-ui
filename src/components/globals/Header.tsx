@@ -9,7 +9,7 @@ import { supportedChains } from '../../blockchain/constants';
 
 export default function Header() {
     const { isConnected } = useAccount();
-    const { nftId } = useContext(AppContext);
+    const { nftId, collectivePFP } = useContext(AppContext);
     const { chain } = useNetwork();
 
     const currentChain = supportedChains[chain?.id as number];
@@ -18,28 +18,14 @@ export default function Header() {
     return (
         <header className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex gap-5 items-center">
-                <img src={IconLogo} alt="Koru DAO" className="w-40" />
-                <a href="https://www.gelato.network/"
-                   target="_blank"
-                >
-                    <img
-                        src={PoweredGelato}
-                        className="w-36 shrink-0"
-                        alt="Powered by Gelato"
-                    />
-                </a>
+                <span style={{ backgroundImage: `url('${collectivePFP}')`}} className={`w-10 h-10 rounded-full bg-center bg-cover`} />
+                Collective Lens
             </div>
             <div className="mt-6 md:mt-0 items-center gap-2 md:gap-4 flex">
                 {isConnected &&
                   <>
                       {nftId && typeof nftId === 'string' &&
-                        <a href={openSeaUrl} target="_blank">
-                            <img
-                              src={`https://ops.infura-ipfs.io/ipfs/QmVUFZH3CcL6cec3Q9p48EWcRWReY8ktMKSZfcPdyBo71H/${nftId}.png`}
-                              className="w-10 rounded-xl"
-                              alt="Nft"
-                            />
-                        </a>
+                          'Access Token: #' + nftId
                       }
                       <Account />
                   </>

@@ -46,9 +46,7 @@ export default function App() {
             <Header />
             <main className="mt-6 lg:mt-20 md:w-[640px] mx-auto">
 
-                {!isMintingOpen && <UiCountdownMint />}
-
-                {isMintingOpen && isConnected && !nftId && (chain?.id === 137 || chain?.id === 80001) &&
+                {isConnected && !nftId && (chain?.id === 137 || chain?.id === 80001) &&
                   <>
                       {
                           chain?.id === 137 && (lensProfileMinted || (totalNftMinted === totalNftSupply)) ?
