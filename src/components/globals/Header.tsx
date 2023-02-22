@@ -9,7 +9,7 @@ import { supportedChains } from '../../blockchain/constants';
 
 export default function Header() {
     const { isConnected } = useAccount();
-    const { nftId, collectivePFP } = useContext(AppContext);
+    const { nftId, collectiveProfile } = useContext(AppContext);
     const { chain } = useNetwork();
 
     const currentChain = supportedChains[chain?.id as number];
@@ -18,8 +18,8 @@ export default function Header() {
     return (
         <header className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex gap-5 items-center">
-                <span style={{ backgroundImage: `url('${collectivePFP}')`}} className={`w-10 h-10 rounded-full bg-center bg-cover`} />
-                Collective Lens
+                <span style={{ backgroundImage: `url('${collectiveProfile.picture}')`}} className={`w-10 h-10 rounded-full bg-center bg-cover`} />
+                {collectiveProfile.handle}
             </div>
             <div className="mt-6 md:mt-0 items-center gap-2 md:gap-4 flex">
                 {isConnected &&

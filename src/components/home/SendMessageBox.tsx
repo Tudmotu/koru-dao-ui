@@ -21,7 +21,7 @@ export default function SendMessageBox() {
     const { address } = useAccount();
     const { data: signer } = useSigner();
 
-    const { lensHandler, publications, setPublications, userPost, nftId, collectivePFP }: any = useContext(AppContext);
+    const { lensHandler, publications, setPublications, userPost, nftId, collectiveProfile }: any = useContext(AppContext);
 
     const [userMessage, setUserMessage] = useState<string>('');
     const [isPosted, setIsPosted] = useState<any>(false);
@@ -67,7 +67,7 @@ export default function SendMessageBox() {
         const postData = {
             profileId: supportedChains[chain?.id as number].lensProfileId,
             contentURI,
-            collectModule: ethers.constants.AddressZero, // supportedChains[chain?.id as number].freeCollectModule,
+            collectModule: supportedChains[chain?.id as number].freeCollectModule,
             collectModuleInitData:
                 "0x0000000000000000000000000000000000000000000000000000000000000000",
             referenceModule: ethers.constants.AddressZero,
@@ -127,7 +127,7 @@ export default function SendMessageBox() {
         <div>
             <div className="koru-box mt-6 lg:mt-10 p-10 min-h-[200px]">
                 <div className="flex gap-4">
-                    <span style={{ backgroundImage: `url('${collectivePFP}')`}} className="flex-none w-12 h-12 rounded-full bg-center bg-cover" />
+                    <span style={{ backgroundImage: `url('${collectiveProfile.picture}')`}} className="flex-none w-12 h-12 rounded-full bg-center bg-cover" />
                     <div className="text-left w-full">
                         <textarea
                             onChange={(e) => setUserMessage(e.target.value)}

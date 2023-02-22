@@ -12,6 +12,12 @@ const contextDefaultValues: any = {
     connectModal: true,
 };
 
+export type CollectiveProfile = {
+    picture: string;
+    name: string;
+    handle: string;
+}
+
 export const AppContext = createContext<any>(contextDefaultValues);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
@@ -42,7 +48,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         lastPost: null,
         postInterval: null,
     });
-    const [collectivePFP, setCollectivePFP] = useState<string>("");
+    const [collectiveProfile, setCollectiveProfile] = useState<Partial<CollectiveProfile>>({});
 
     function logState(state: boolean[]) {
         const errorsMap = [
@@ -145,14 +151,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const getCollectivePFP = async () => {
-        const { profile } = await request(supportedChains[chainId].lensUrl, GET_USER_PFP, {
+        const { profile: data } = await request(supportedChains[chainId].lensUrl, GET_USER_PFP, {
             id: supportedChains[chainId].lensProfileId
         });
-        const ipfsPicURL: string = profile.picture.original.url;
+        const ipfsPicURL: string = data.picture.original.url;
         const picHash: string = ipfsPicURL.replace('ipfs://', '');
-        const profilePic: string = `https://cloudflare-ipfs.com/ipfs/${picHash}`;
-
-        setCollectivePFP(profilePic);
+        const picture: string = `https://cloudflare-ipfs.com/ipfs/${picHash}`;
+        const profile: CollectiveProfile = {
+            picture,
+            name: data.name,
+            handle: data.handle
+        };
+        setCollectiveProfile(profile);
+        const link = document.querySelector("link[rel~='icon']");
+        link.href = picture;
     };
 
     const getWalletLensHandle = async () => {
@@ -278,7 +290,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 lensProfileMinted,
                 mintTaskId,
                 setMintTaskId,
-                collectivePFP
+                collectiveProfile
             }}
         >
             {children}

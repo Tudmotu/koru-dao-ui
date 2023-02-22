@@ -139,7 +139,8 @@ export const GET_USER_BALANCES = gql`
 export const GET_USER_PFP = gql`
 query($id: ProfileId!) {
   profile(request: {profileId: $id}) {
-    id
+    name,
+    handle,
     picture {
       ... on MediaSet {
         __typename
