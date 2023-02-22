@@ -22,7 +22,8 @@ export const AppContext = createContext<any>(contextDefaultValues);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
     const { chain } = useNetwork();
-    const chainId: number = chain?.id as number ?? (location.hostname === 'localhost' ? (location.search.includes('mainnet') ? 137 : 80001) : 137);
+    //const chainId: number = chain?.id as number ?? (location.hostname === 'localhost' ? (location.search.includes('mainnet') ? 137 : 80001) : 137);
+    const chainId: number = 80001;
     const { address, isConnected } = useAccount();
     const { data: signer } = useSigner();
     const [connectModal, setConnectModal] = useState<boolean>(false);
