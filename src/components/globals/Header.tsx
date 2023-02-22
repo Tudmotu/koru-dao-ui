@@ -19,7 +19,10 @@ export default function Header() {
         <header className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex gap-5 items-center">
                 <span style={{ backgroundImage: `url('${collectiveProfile.picture}')`}} className={`w-10 h-10 rounded-full bg-center bg-cover`} />
-                {collectiveProfile.handle}
+                <span className="flex flex-col">
+                    <span>{collectiveProfile.name}</span>
+                    <span className="text-sm">@{collectiveProfile.handle}</span>
+                </span>
             </div>
             <div className="mt-6 md:mt-0 items-center gap-2 md:gap-4 flex">
                 {isConnected &&
