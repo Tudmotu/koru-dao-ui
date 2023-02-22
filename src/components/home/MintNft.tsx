@@ -69,7 +69,7 @@ export default function MintNft() {
             <div className="flex items-center gap-4 justify-between flex-col lg:flex-row">
                 <div className="flex items-center gap-6">
                     <figure className="w-14 shrink-0">
-                        <img alt="Nft" src="/images/nft.png" className="rounded-full inline-block" />
+                        <img alt="Nft" src="./images/mint-icon.svg" className="inline-block" />
                     </figure>
                     <div className="text-center lg:text-left">
                         {chain?.id === 137 &&
@@ -103,7 +103,7 @@ export default function MintNft() {
                     onClick={() => mint()}
                     className="koru-btn _pink inline-block"
                 >
-                    Mint NFT now
+                    Claim Access Token
                 </button>
             </div>
         </div>
