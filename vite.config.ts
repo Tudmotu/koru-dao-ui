@@ -11,6 +11,7 @@ export default defineConfig({
             '@': path.resolve(__dirname, 'src'),
         },
     },
+    base: '/koru-dao-ui/',
     build: {
         target: ['es2020'],
         outDir: 'docs'

@@ -163,7 +163,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             handle: data.handle
         };
         setCollectiveProfile(profile);
-        const link = document.querySelector("link[rel~='icon']");
+        const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
         link.href = picture;
     };
 
